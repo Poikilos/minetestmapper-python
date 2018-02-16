@@ -37,6 +37,8 @@ Use python to make minetest maps from worlds.
 (2018-02-15)
 * expertmm: clarified license notices in python files
 * expertmm: (minetestmapper-numpy.py) changed minheight and maxheight to --min-y and --max-y to conform to official minetestmapper
+* expertmm: (minetestmapper.py) for now, silently ignore drawalpha, noshading, min-y, max-y, backend, zoom, colors, scales for compatibility with official minetestmapper
+* expertmm: (minetestmapper-numpy.py) for now silently ignore drawalpha, noshading, geometry, scales, colors, backend (and rename `pixelspernode` param to `zoom`) for compatibility with official minetestmapper
 (2018-02-14)
 * expertmm: (minetestmapper-numpy.py) fixed exception while showing exception (see "Could not finish writing r error since r was not initialized")--the original exception occurs for unknown reason
 (2017-04-12)

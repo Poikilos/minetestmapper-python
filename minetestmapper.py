@@ -205,6 +205,22 @@ for o, a in opts:
         geometry_string = a
     elif o == "--region":
         region_string = a
+    elif o == "--drawalpha":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--noshading":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--min-y":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--max-y":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--backend":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--zoom":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--colors":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
+    elif o == "--scales":
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     else:
         assert False, "unhandled option"
 
