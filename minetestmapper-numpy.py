@@ -486,9 +486,11 @@ class LVLDB:
         return BytesIO(self.conn.Get(pos))
 
 
+R_MSG = "<Could not finish writing r error since r was not initialized>"
 
 class World:
     def __init__(self,args):
+        self.r_error_enable = True
         self.xlist = []
         self.zlist = []
         self.args = args
@@ -826,7 +828,10 @@ class World:
                         for c in r[0]:
                             sys.stdout.write("%2.2x "%ord(c))
                     except:
-                        print("<Could not finish writing r error since r was not initialized>")
+                        if self.r_error_enable:
+                            print(R_MSG)
+                            # stop here or stdout is several hundred MB:
+                            self.r_error_enable = False
                     sys.stdout.write(os.linesep)
                     sys.stdout.write("Data after node metadata: ")
                     for c in data_after_node_metadata:
