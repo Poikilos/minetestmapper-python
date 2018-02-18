@@ -36,9 +36,8 @@ Use python to make minetest maps from worlds.
 ## Changes
 ### (2018-02-15)
 * expertmm made new repo <https://github.com/expertmm/minetestmapper-python> to contain:
-  * minetestmapper.py (deleted expertmm/minetest fork where only the script was changed, deleted copy of the same changed version of the script at expertmm/EnlivenMinetest/mtanalyze)
-  * minetestmapper files that were moved from minetest/minetest/util (except forked version of minetestmapper.py described above)
-  * minetestmapper-numpy.py by spillz (but used forked version of it from expertmm/EnlivenMinetest/mtanalyze and deleted it from there)
+  * minetestmapper files that were discontinued (from official minetest's minetest/util); as separate commit, added expertmm fork of minetestmapper.py (deleted expertmm minetest fork where only the script was changed, deleted copy of the same changed version of the script at expertmm EnlivenMinetest/mtanalyze -- see changes by expertmm at previous dates in this changelog)
+  * minetestmapper-numpy.py by spillz (as separate commit, added forked version of it from expertmm EnlivenMinetest/mtanalyze and deleted it from there--see changes by expertmm at previous dates in this changelog)
 * clarified license notices within python files
 * (minetestmapper-numpy.py) changed minheight and maxheight to --min-y and --max-y to conform to official minetestmapper
 * (minetestmapper.py) for now, silently ignore drawalpha, noshading, min-y, max-y, backend, zoom, colors, scales for compatibility with official minetestmapper
