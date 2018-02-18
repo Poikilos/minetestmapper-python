@@ -34,27 +34,32 @@ Use python to make minetest maps from worlds.
   * add `--min-y` and `--max-y` params (see `for y in reversed(range(16)):`?)
 
 ## Changes
-(2018-02-15)
-* expertmm: clarified license notices in python files
-* expertmm: (minetestmapper-numpy.py) changed minheight and maxheight to --min-y and --max-y to conform to official minetestmapper
-* expertmm: (minetestmapper.py) for now, silently ignore drawalpha, noshading, min-y, max-y, backend, zoom, colors, scales for compatibility with official minetestmapper
-* expertmm: (minetestmapper-numpy.py) for now silently ignore drawalpha, noshading, geometry, scales, colors, backend (and rename `pixelspernode` param to `zoom`) for compatibility with official minetestmapper
-(2018-02-14)
-* expertmm: (minetestmapper-numpy.py) fixed exception while showing exception (see "Could not finish writing r error since r was not initialized")--the original exception occurs for unknown reason
-(2017-04-12)
-* expertmm: (minetestmapper.py) PEP8 compliance
-(2017-03-17)
-* expertmm: (minetestmapper.py) removed license from script (file should fall under the LICENSE included in the project)
-(2016-03-08)
-* expertmm: (minetestmapper.py) geometry and region params
-(2011-07-30)
+### (2018-02-15)
+* expertmm made new repo <https://github.com/expertmm/minetestmapper-python> to contain:
+  * minetestmapper.py (deleted expertmm/minetest fork where only the script was changed, deleted copy of the same changed version of the script at expertmm/EnlivenMinetest/mtanalyze)
+  * minetestmapper files that were moved from minetest/minetest/util (except forked version of minetestmapper.py described above)
+  * minetestmapper-numpy.py by spillz (but used forked version of it from expertmm/EnlivenMinetest/mtanalyze and deleted it from there)
+* clarified license notices within python files
+* (minetestmapper-numpy.py) changed minheight and maxheight to --min-y and --max-y to conform to official minetestmapper
+* (minetestmapper.py) for now, silently ignore drawalpha, noshading, min-y, max-y, backend, zoom, colors, scales for compatibility with official minetestmapper
+* (minetestmapper-numpy.py) for now silently ignore drawalpha, noshading, geometry, scales, colors, backend (and rename `pixelspernode` param to `zoom`) for compatibility with official minetestmapper
+### (2018-02-14)
+* (minetestmapper-numpy.py) fixed exception while showing exception (see "Could not finish writing r error since r was not initialized")--the original exception occurs for unknown reason
+### (2017-04-12)
+* (minetestmapper.py) PEP8 compliance
+### (2017-03-17)
+* (minetestmapper.py) removed license from script (file should fall under the LICENSE included in the project)
+### (2016-03-08)
+* expertmm forked minetest
+* (minetestmapper.py) geometry and region params
+### (2011-07-30)
 * WF: Support for content types extension, refactoring
 * erlehmann: PEP 8 compliance.
-(2011-06-04)
+### (2011-06-04)
 * celeron55: added #!/usr/bin/python2 and converted \r\n to \n to make it easily executable on Linux
-(2011-06-02)
+### (2011-06-02)
 * j0gge: command line parameters, coordinates, players, ...
-(2011-05-30)
+### (2011-05-30)
 * celeron55: simultaneous support for sectors/sectors2, removed
-(2011-05-29)
+### (2011-05-29)
 * j0gge: initial release
