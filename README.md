@@ -45,7 +45,7 @@ Use python to make minetest maps from worlds.
 * (minetestmapper.py) for now, silently ignore drawalpha, noshading, min-y, max-y, backend, zoom, colors, scales for compatibility with official minetestmapper
 * (minetestmapper-numpy.py) for now silently ignore drawalpha, noshading, geometry, scales, colors, backend (and rename `pixelspernode` param to `zoom`) for compatibility with official minetestmapper
 ### (2018-02-14)
-* (minetestmapper-numpy.py) fixed exception while showing exception (see uses of "<Could not finish writing r error since r was not initialized>" message variable)--the original exception occurs for unknown reason
+* (minetestmapper-numpy.py) fixed exception while showing exception (see uses of `"<Could not finish writing r error since r was not initialized>"` message variable)--the original exception occurs for unknown reason
 ### (2017-04-12)
 * (minetestmapper.py) PEP8 compliance
 ### (2017-03-17)
