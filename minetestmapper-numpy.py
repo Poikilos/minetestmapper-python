@@ -198,8 +198,8 @@ def parse_args():
     parser.add_argument('--drawunderground',dest='drawunderground',action='store_const', const = 1, default = 0, help = 'draw underground areas overlaid on the map')
     parser.add_argument('--drawunderground-standalone',dest='drawunderground',action='store_const', const = 2, help = 'draw underground areas as a standalone map')
     parser.add_argument('--region', nargs=4, type = int, metavar = ('XMIN','XMAX','ZMIN','ZMAX'), default = (-2000,2000,-2000,2000),help = 'set the bounding x,z coordinates for the map (units are nodes, default = -2000 2000 -2000 2000)')
-    parser.add_argument('--max-y', type = int, metavar = ('YMAX'), default = 500, help = 'don\'t draw above height YMAX (default = 500)')
-    parser.add_argument('--min-y', type = int, metavar = ('YMIN'), default = -500, help = 'don\'t draw below height YMIN (defualt = -500)')
+    parser.add_argument('--max-y', dest='maxheight', type = int, metavar = ('YMAX'), default = 500, help = 'don\'t draw above height YMAX (default = 500)')
+    parser.add_argument('--min-y', dest='minheight', type = int, metavar = ('YMIN'), default = -500, help = 'don\'t draw below height YMIN (defualt = -500)')
     parser.add_argument('--zoom', type = int, metavar = ('PPN'), default = 1, help = 'number of pixels per node (default = 1)')
     parser.add_argument('--facing', type = str, choices = ('up','down','north','south','east','west'),default='down',help = 'direction to face when drawing (north, south, east or west will draw a cross-section)')
     parser.add_argument('--geometry', type = str, default='',help = 'accepted for compatibility but NOT YET IMPLEMENTED in this version')
@@ -516,8 +516,8 @@ class World:
         '''
         args = self.args
         sector_xmin,sector_xmax,sector_zmin,sector_zmax = numpy.array(args.region)/16
-        sector_ymin = args.YMIN/16
-        sector_ymax = args.YMAX/16
+        sector_ymin = args.minheight/16
+        sector_ymax = args.maxheight/16
         xlist = []
         zlist = []
         self.lookup={}
@@ -551,8 +551,8 @@ class World:
             self.maxz = max(zlist)
 
             x0,x1,z0,z1 = numpy.array(args.region)
-            y0 = args.YMIN
-            y1 = args.YMAX
+            y0 = args.minheight
+            y1 = args.maxheight
             self.minypos = self.facing(int(x0),int(y0),int(z0))[1]
             self.maxypos = self.facing(int(x1),int(y1),int(z1))[1]
 
@@ -628,8 +628,8 @@ class World:
             sectortype = ""
 
             if db is not None:
-                ymin = self.minypos/16 #-2048 if args.YMIN is None else args.YMIN/16+1
-                ymax = self.maxypos/16+1 #2047 if args.YMAX is None else args.YMAX/16+1
+                ymin = self.minypos/16 #-2048 if args.minheight is None else args.minheight/16+1
+                ymax = self.maxypos/16+1 #2047 if args.maxheight is None else args.maxheight/16+1
                 for k in self.lookup[(xpos,zpos)]:
                     ylist.append(k)
                 sectortype = "sqlite"
@@ -786,7 +786,7 @@ class World:
                             readU16(f)
                             readS32(f)
                             readS32(f)
-                    ##facing in down,south,west use YMAX, otherwise use YMIN
+                    ##facing in down,south,west use maxheight, otherwise use minheight
                     if face_swap_order[0]>0:
                         maxy = 15
                         if ypos*16 + 15 > self.maxypos:
