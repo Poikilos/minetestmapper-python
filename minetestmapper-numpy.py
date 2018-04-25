@@ -30,13 +30,13 @@ except:
     print("pip install Pillow")
     print("")
     print("On *nix-like systems:")
-    print("python -m pip install --upgrade pip")
-    print("python -m pip install --upgrade pip wheel\n"
+    print("sudo python2 -m pip install --upgrade pip")
+    print("sudo python2 -m pip install --upgrade pip wheel"
     print("#then:")
     #print("sudo pip install Pillow")
-    print("python2 -m pip install Pillow\n")
+    print("python2 -m pip install Pillow")
     print("#or")
-    print("python3 -m pip install Pillow\n")
+    print("#same but python3 instead")
     #print("sudo pip install Pillow")
     exit()
 
@@ -70,13 +70,13 @@ def pngsave(im, file):
         print("pip install Pillow")
         print("")
         print("On *nix-like systems:")
-        print("python -m pip install --upgrade pip")
-        print("python -m pip install --upgrade pip wheel\n"
+        print("sudo python2 -m pip install --upgrade pip")
+        print("sudo python2 -m pip install --upgrade pip wheel"
         print("#then:")
         #print("sudo pip install Pillow")
-        print("python2 -m pip install Pillow\n")
+        print("python2 -m pip install Pillow")
         print("#or")
-        print("python3 -m pip install Pillow\n")
+        print("#same but python3 instead")
         #print("sudo pip install Pillow")
         exit()
 
