@@ -27,14 +27,14 @@ import traceback
 try:
     from PIL import Image, ImageDraw, ImageFont, ImageColor
 except:
-    print("You must first install Pillow's PIL."
+    print("You must first install Pillow's PIL.")
     print("On Windows:")
     print("Right-click windows menu, 'Command Prompt (Admin)' then:")
     print("pip install Pillow")
     print("")
     print("On *nix-like systems:")
     print("sudo python2 -m pip install --upgrade pip")
-    print("sudo python2 -m pip install --upgrade pip wheel"
+    print("sudo python2 -m pip install --upgrade pip wheel")
     print("#then:")
     #print("sudo pip install Pillow")
     print("python2 -m pip install Pillow")
