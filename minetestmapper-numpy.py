@@ -21,7 +21,24 @@ import sys
 import traceback
 import numpy
 import itertools
-from PIL import Image, ImageDraw, ImageFont, ImageColor
+try:
+    from PIL import Image, ImageDraw, ImageFont, ImageColor
+except:
+    print("You must first install Pillow's PIL."
+    print("On Windows:")
+    print("Right-click windows menu, 'Command Prompt (Admin)' then:")
+    print("pip install Pillow")
+    print("")
+    print("On *nix-like systems:")
+    print("python -m pip install --upgrade pip")
+    print("python -m pip install --upgrade pip wheel\n"
+    print("#then:")
+    #print("sudo pip install Pillow")
+    print("python2 -m pip install Pillow\n")
+    print("#or")
+    print("python3 -m pip install Pillow\n")
+    #print("sudo pip install Pillow")
+    exit()
 
 try:
     import io
@@ -43,7 +60,26 @@ def pngsave(im, file):
     reserved = ('interlace', 'gamma', 'dpi', 'transparency', 'aspect')
 
     # undocumented class
-    from PIL import PngImagePlugin
+    try:
+        from PIL import PngImagePlugin
+    except:
+        print("ERROR: Could not finish at `from PIL import PngImagePlugin`")
+        print("You must first install Pillow's PIL."
+        print("On Windows:")
+        print("Right-click windows menu, 'Command Prompt (Admin)' then:")
+        print("pip install Pillow")
+        print("")
+        print("On *nix-like systems:")
+        print("python -m pip install --upgrade pip")
+        print("python -m pip install --upgrade pip wheel\n"
+        print("#then:")
+        #print("sudo pip install Pillow")
+        print("python2 -m pip install Pillow\n")
+        print("#or")
+        print("python3 -m pip install Pillow\n")
+        #print("sudo pip install Pillow")
+        exit()
+
     meta = PngImagePlugin.PngInfo()
 
     # copy metadata into new object

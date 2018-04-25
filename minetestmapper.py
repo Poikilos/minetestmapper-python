@@ -24,7 +24,24 @@ import sys
 import array
 import cStringIO
 import traceback
-from PIL import Image, ImageDraw, ImageFont, ImageColor
+try:
+    from PIL import Image, ImageDraw, ImageFont, ImageColor
+except:
+    print("You must first install Pillow's PIL."
+    print("On Windows:")
+    print("Right-click windows menu, 'Command Prompt (Admin)' then:")
+    print("pip install Pillow")
+    print("")
+    print("On *nix-like systems:")
+    print("python -m pip install --upgrade pip")
+    print("python -m pip install --upgrade pip wheel\n"
+    print("#then:")
+    #print("sudo pip install Pillow")
+    print("python2 -m pip install Pillow\n")
+    print("#or")
+    print("python3 -m pip install Pillow\n")
+    #print("sudo pip install Pillow")
+    exit()
 
 TRANSLATION_TABLE = {
     1: 0x800,  # CONTENT_GRASS
