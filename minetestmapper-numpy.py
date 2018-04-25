@@ -200,7 +200,7 @@ def parse_args():
     parser.add_argument('--region', nargs=4, type = int, metavar = ('XMIN','XMAX','ZMIN','ZMAX'), default = (-2000,2000,-2000,2000),help = 'set the bounding x,z coordinates for the map (units are nodes, default = -2000 2000 -2000 2000)')
     parser.add_argument('--max-y', dest='maxheight', type = int, metavar = ('YMAX'), default = 500, help = 'don\'t draw above height YMAX (default = 500)')
     parser.add_argument('--min-y', dest='minheight', type = int, metavar = ('YMIN'), default = -500, help = 'don\'t draw below height YMIN (defualt = -500)')
-    parser.add_argument('--zoom', type = int, metavar = ('PPN'), default = 1, help = 'number of pixels per node (default = 1)')
+    parser.add_argument('--zoom', dest='pixelspernode', type = int, metavar = ('PPN'), default = 1, help = 'number of pixels per node (default = 1)')
     parser.add_argument('--facing', type = str, choices = ('up','down','north','south','east','west'),default='down',help = 'direction to face when drawing (north, south, east or west will draw a cross-section)')
     parser.add_argument('--geometry', type = str, default='',help = 'accepted for compatibility but NOT YET IMPLEMENTED in this version')
     parser.add_argument('--scales', type = str, default='',help = 'accepted for compatibility but NOT YET IMPLEMENTED in this version')
