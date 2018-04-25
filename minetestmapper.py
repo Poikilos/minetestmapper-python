@@ -3,7 +3,7 @@
 
 # Make an image using minetest data.
 #
-# Made by Jogge, modified by: celeron55, expertmm
+# Made by Jogge, modified by: celeron55, poikilos
 #
 # The minetestmapper-python project is free software. It comes without
 # any warranty to the extent permitted by applicable law. You can

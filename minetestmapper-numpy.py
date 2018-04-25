@@ -3,7 +3,7 @@
 
 # Make an image using minetest data (numpy-ized by spillz).
 #
-# Made by spillz, modified by: expertmm
+# Made by spillz, modified by: poikilos
 # Based on minetestmapper by Jogge, modified by: celeron55
 #
 # The minetestmapper-python project is free software. It comes without
@@ -516,8 +516,8 @@ class World:
         '''
         args = self.args
         sector_xmin,sector_xmax,sector_zmin,sector_zmax = numpy.array(args.region)/16
-        sector_ymin = args.minheight/16
-        sector_ymax = args.maxheight/16
+        sector_ymin = args.YMIN/16
+        sector_ymax = args.YMAX/16
         xlist = []
         zlist = []
         self.lookup={}
@@ -551,8 +551,8 @@ class World:
             self.maxz = max(zlist)
 
             x0,x1,z0,z1 = numpy.array(args.region)
-            y0 = args.minheight
-            y1 = args.maxheight
+            y0 = args.YMIN
+            y1 = args.YMAX
             self.minypos = self.facing(int(x0),int(y0),int(z0))[1]
             self.maxypos = self.facing(int(x1),int(y1),int(z1))[1]
 
@@ -628,8 +628,8 @@ class World:
             sectortype = ""
 
             if db is not None:
-                ymin = self.minypos/16 #-2048 if args.minheight is None else args.minheight/16+1
-                ymax = self.maxypos/16+1 #2047 if args.maxheight is None else args.maxheight/16+1
+                ymin = self.minypos/16 #-2048 if args.YMIN is None else args.YMIN/16+1
+                ymax = self.maxypos/16+1 #2047 if args.YMAX is None else args.YMAX/16+1
                 for k in self.lookup[(xpos,zpos)]:
                     ylist.append(k)
                 sectortype = "sqlite"
@@ -786,7 +786,7 @@ class World:
                             readU16(f)
                             readS32(f)
                             readS32(f)
-                    ##facing in down,south,west use maxheight, otherwise use minheight
+                    ##facing in down,south,west use YMAX, otherwise use YMIN
                     if face_swap_order[0]>0:
                         maxy = 15
                         if ypos*16 + 15 > self.maxypos:
