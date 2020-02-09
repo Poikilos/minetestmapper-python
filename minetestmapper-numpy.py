@@ -44,8 +44,8 @@ try:
     import io
     BytesIO = io.BytesIO
 except:
-    import cStringIO
-    BytesIO = cStringIO.StringIO
+    import io
+    BytesIO = io.StringIO
 
 
 #
@@ -83,7 +83,7 @@ def pngsave(im, file):
     meta = PngImagePlugin.PngInfo()
 
     # copy metadata into new object
-    for k,v in im.info.iteritems():
+    for k,v in im.info.items():
         if k in reserved: continue
         meta.add_text(k, v, 0)
 
@@ -393,9 +393,9 @@ def map_block(mapdata, version, ypos, maxy, plist, cdata, hdata, dnddata, day_ni
     mapdata = numpy.swapaxes(mapdata.reshape(16,16,16),swap1a,swap1b)
     mapdata = numpy.swapaxes(mapdata,swap2a,swap2b).reshape(16,256)
     if face_swap_order[0]>0:
-        r = range(maxy,-1,-1)
+        r = list(range(maxy,-1,-1))
     else:
-        r = range(maxy,16,1)
+        r = list(range(maxy,16,1))
 #        mapdata=mapdata[::-1]
     y=maxy
 #    if True:
@@ -439,9 +439,9 @@ def map_block_ug(mapdata, version, ypos, maxy, cdata, hdata, udata, uhdata, dndd
     mapdata = numpy.swapaxes(mapdata.reshape(16,16,16),swap1a,swap1b)
     mapdata = numpy.swapaxes(mapdata,swap2a,swap2b).reshape(16,256)
     if face_swap_order[0]>0:
-        r = range(maxy,-1,-1)
+        r = list(range(maxy,-1,-1))
     else:
-        r = range(maxy,16,1)
+        r = list(range(maxy,16,1))
     y=maxy
     for y in r:
         content = mapdata[y]
@@ -482,7 +482,7 @@ class SQLDB:
         self.cur.execute("SELECT `pos` FROM `blocks`")
         while True:
             r = self.cur.fetchone()
-            print("getting int from first index of value "+str(r))
+            print(("getting int from first index of value "+str(r)))
             if not r:
                 break
             x, y, z = getIntegerAsBlock(r[0])
@@ -579,7 +579,7 @@ class World:
 
         if len(xlist)>0:
             # Get rid of duplicates
-            self.xlist, self.zlist = zip(*sorted(set(zip(xlist, zlist))))
+            self.xlist, self.zlist = list(zip(*sorted(set(zip(xlist, zlist)))))
 
             self.minx = min(xlist)
             self.minz = min(zlist)
@@ -651,10 +651,10 @@ class World:
                     remaining_s = time_guess - dtime
                     remaining_minutes = int(remaining_s / 60)
                     remaining_s -= remaining_minutes * 60
-                    print("Processing sector " + str(n) + " of " + str(len(xlist))
+                    print(("Processing sector " + str(n) + " of " + str(len(xlist))
                             + " (" + str(round(100.0 * n / len(xlist), 1)) + "%)"
                             + " (ETA: " + str(remaining_minutes) + "m "
-                            + str(int(remaining_s)) + "s)")
+                            + str(int(remaining_s)) + "s)"))
 
             xpos = xlist[n]
             zpos = zlist[n]
@@ -857,7 +857,7 @@ class World:
                             mapinfo['undergroundh'][pos] = uhdata.reshape(16,16)
                         break
                 except Exception as e:
-                    print("Error at ("+str(xpos)+","+str(ypos)+","+str(zpos)+"): "+str(e))
+                    print(("Error at ("+str(xpos)+","+str(ypos)+","+str(zpos)+"): "+str(e)))
                     traceback.print_exc()
                     sys.stdout.write("Block data: ")
                     try:
@@ -950,8 +950,8 @@ def draw_image(world,uid_to_color):
         ugstrength = (ugstrength>0)*0.1 + ugcoeff*ugstrength
         ugstrength = ugstrength - (ugstrength-0.75)*(ugstrength>0.75)
         ugstrength = ugstrength[:,:,numpy.newaxis]
-        print('ugmin',stuff['undergroundh'].min())
-        print('ugmax',stuff['undergroundh'].max())
+        print(('ugmin',stuff['undergroundh'].min()))
+        print(('ugmax',stuff['undergroundh'].max()))
         ugdepth = 1.0* (stuff['undergroundh']-stuff['undergroundh'].min())/(stuff['undergroundh'].max()-stuff['undergroundh'].min())
         ugdepth = ugdepth[:,:,numpy.newaxis]
         u = stuff['underground']
@@ -1045,10 +1045,10 @@ def draw_image(world,uid_to_color):
                     p = line.split()
                     if p[0] == "name":
                         name = p[2]
-                        print(filename + ": name = " + name)
+                        print((filename + ": name = " + name))
                     if p[0] == "position":
                         position = p[2][1:-1].split(",")
-                        print(filename + ": position = " + p[2])
+                        print((filename + ": position = " + p[2]))
                 if len(name) < 0 and len(position) == 3:
                     x,y,z = [int(float(p)/10) for p in position]
                     x,y,z = world.facing(x,y,z)
@@ -1073,12 +1073,12 @@ def draw_image(world,uid_to_color):
     pngmaxz = maxz*16+16
     pngregion=[pngminx, pngmaxx, pngminz, pngmaxz]
 
-    print("Saving to: "+ args.output)
-    print("PNG Region: ", pngregion)
-    print("pngMinX: ", str(pngminx))
-    print("pngMaxZ: ", str(pngmaxz))
-    print("Pixels PerNode: ", args.pixelspernode)
-    print("border: ", border)
+    print(("Saving to: "+ args.output))
+    print(("PNG Region: ", pngregion))
+    print(("pngMinX: ", str(pngminx)))
+    print(("pngMaxZ: ", str(pngmaxz)))
+    print(("Pixels PerNode: ", args.pixelspernode))
+    print(("border: ", border))
 
     # This saves data in tEXt chunks (non-standard naming tags are allowed according to the PNG specification)
     im.info["pngRegion"] = str(pngregion[0])+ ","+ str(pngregion[1])+ ","+ str(pngregion[2])+ ","+ str(pngregion[3])
@@ -1092,15 +1092,15 @@ def draw_image(world,uid_to_color):
         # Now create a square 'thumbnail' for display on square faces (which turns out to benefit from quite high resolution).
         thumbSize = 512
         imSize = im.size
-        print imSize
+        print(imSize)
         if imSize[0] > imSize[1]:
           reSize=(thumbSize, int(thumbSize*(float(imSize[1])/imSize[0])))
         else:
           reSize=(int(thumbSize*(float(imSize[0])/imSize[1])), thumbSize)
-        print reSize
+        print(reSize)
 
         thumbBorder=((thumbSize-reSize[0])/2, (thumbSize-reSize[1])/2, thumbSize-(thumbSize-reSize[0])/2, thumbSize-(thumbSize-reSize[1])/2)
-        print thumbBorder
+        print(thumbBorder)
         thumbIm = Image.new("RGB", (thumbSize,thumbSize), args.bgcolor)
         thumbIm.paste(im.resize(reSize),thumbBorder)
         thumbIm.save(os.path.splitext(args.output)[0]+"_thumb.png", "PNG")
@@ -1118,8 +1118,8 @@ def main():
         print("World data does not exist.")
         sys.exit(1)
 
-    print("Result image (w=" + str(world.w) + " h=" + str(world.h) + ") will be written to "
-            + args.output)
+    print(("Result image (w=" + str(world.w) + " h=" + str(world.h) + ") will be written to "
+            + args.output))
 
     world.generate_map_info(str_to_uid)
 

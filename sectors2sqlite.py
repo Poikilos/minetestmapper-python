@@ -63,7 +63,7 @@ def getSectorPos(dirname):
         x = parseSigned12bit(dirname[:3])
         z = parseSigned12bit(dirname[4:])
     else:
-        print('Terrible sector at ' + dirname)
+        print(('Terrible sector at ' + dirname))
         return
 
     return x, z
@@ -76,7 +76,7 @@ def getBlockPos(sectordir, blockfile):
         return
 
     if len(blockfile) != 4:
-        print("Invalid block filename: " + blockfile)
+        print(("Invalid block filename: " + blockfile))
 
     y = parseSigned16bit(blockfile)
 
@@ -102,7 +102,7 @@ cur = conn.cursor()
 if create:
     cur.execute("CREATE TABLE IF NOT EXISTS `blocks` (`pos` INT NOT NULL PRIMARY KEY, `data` BLOB);")
     conn.commit()
-    print('Created database at ' + path + 'map.sqlite')
+    print(('Created database at ' + path + 'map.sqlite'))
 
 # Crawl the folders
 
@@ -115,7 +115,7 @@ for base in paths:
     elif base == 'sectors2':
         v= 2
     else:
-        print('Ignoring base ' + base)
+        print(('Ignoring base ' + base))
         continue
 
     for root, dirs, files in os.walk(path + base):
@@ -124,7 +124,7 @@ for base in paths:
                 pos = getBlockAsInteger(getBlockPos(root[(-8 if v == 1 else -7 if v == 2 else 0):], block))
 
                 if pos is None:
-                    print('Ignoring broken path ' + root + '/' + block)
+                    print(('Ignoring broken path ' + root + '/' + block))
                     continue
 
                 f = open(root+'/'+block, 'rb')
@@ -139,8 +139,8 @@ for base in paths:
 
         if(time.time() - t > 3):
             t = time.time()
-            print(str(count)+' blocks processed...')
+            print((str(count)+' blocks processed...'))
 
 conn.commit()
 
-print('Finished. (' + str(count) + ' blocks)')
+print(('Finished. (' + str(count) + ' blocks)'))

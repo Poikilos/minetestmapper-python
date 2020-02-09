@@ -22,7 +22,7 @@ import time
 import getopt
 import sys
 import array
-import cStringIO
+import io
 import traceback
 try:
     from PIL import Image, ImageDraw, ImageFont, ImageColor
@@ -175,7 +175,7 @@ try:
                                 "region="])
 except getopt.GetoptError as err:
     # print help information and exit:
-    print(str(err))  # will print something like "option -a not recognized"
+    print((str(err)))  # will print something like "option -a not recognized"
     usage()
     sys.exit(2)
 
@@ -223,21 +223,21 @@ for o, a in opts:
     elif o == "--region":
         region_string = a
     elif o == "--drawalpha":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--noshading":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--min-y":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--max-y":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--backend":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--zoom":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--colors":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     elif o == "--scales":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
+        print(("# ignored (NOT YET IMPLEMENTED) " + o))
     else:
         assert False, "unhandled option"
 
@@ -259,7 +259,7 @@ if geometry_string is not None:
             nonchunky_xmax = nonchunky_xmin + this_width - 1  # inclusive rect
             nonchunky_zmin = z
             nonchunky_zmax = nonchunky_zmin + this_height - 1  # inclusive rect
-            print("#geometry:" + "\n" +
+            print(("#geometry:" + "\n" +
                   "#  x:" + str(x) + "\n" +
                   "#  z:" + str(z) + "\n" +
                   "#  width:" + str(this_width) + "\n" +
@@ -268,15 +268,15 @@ if geometry_string is not None:
                   "  xmin:" + str(nonchunky_xmin) + "\n" +
                   "  xmax:" + str(nonchunky_xmax) + "\n" +
                   "  zmin:" + str(nonchunky_zmin) + "\n" +
-                  "  zmax:" + str(nonchunky_zmax))
+                  "  zmax:" + str(nonchunky_zmax)))
         else:
-            print("ERROR: Missing coordinates in '" + geometry_string +
-                  "' for geometry (must be in the form: x:z+width+height)")
+            print(("ERROR: Missing coordinates in '" + geometry_string +
+                  "' for geometry (must be in the form: x:z+width+height)"))
             usage()
             sys.exit(2)
     else:
-        print("ERROR: Incorrect geometry syntax '" + geometry_string +
-              "' (must be in the form: x:z+width+height)")
+        print(("ERROR: Incorrect geometry syntax '" + geometry_string +
+              "' (must be in the form: x:z+width+height)"))
         usage()
         sys.exit(2)
 elif region_string is not None:
@@ -291,14 +291,14 @@ elif region_string is not None:
         nonchunky_xmax = int(xmax_string)
         nonchunky_zmin = int(zmin_string)
         nonchunky_zmax = int(zmax_string)
-        print("region:" + "\n" +
+        print(("region:" + "\n" +
               "  xmin:" + str(nonchunky_xmin) + "\n" +
               "  xmax:" + str(nonchunky_xmax) + "\n" +
               "  zmin:" + str(nonchunky_zmin) + "\n" +
-              "  zmax:" + str(nonchunky_zmax))
+              "  zmax:" + str(nonchunky_zmax)))
     else:
-        print("ERROR: Incorrect value '" + region_string +
-              "' for region (must be in the form: xmin:xmax,zmin:zmax)")
+        print(("ERROR: Incorrect value '" + region_string +
+              "' for region (must be in the form: xmin:xmax,zmin:zmax)"))
         usage()
         sys.exit(2)
 
@@ -348,12 +348,12 @@ if not os.path.isfile(colors_path):
     sys.exit(1)
 
 try:
-    f = file(colors_path)
+    f = open(colors_path)
 except IOError:
-    f = file(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+    f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "colors.txt"))
 for line in f:
-    values = string.split(line)
+    values = line.split()
     if len(values) < 4:
         continue
     identifier = values[0]
@@ -434,7 +434,7 @@ if len(xlist) == 0 or len(zlist) == 0:
     sys.exit(1)
 
 # Get rid of doubles
-xlist, zlist = zip(*sorted(set(zip(xlist, zlist))))
+xlist, zlist = list(zip(*sorted(set(zip(xlist, zlist)))))
 
 minx = min(xlist)
 minz = min(zlist)
@@ -444,8 +444,8 @@ maxz = max(zlist)
 w = (maxx - minx) * 16 + 16
 h = (maxz - minz) * 16 + 16
 
-print("Result image (w=" + str(w) + " h=" + str(h) + ") will be written to " +
-      output)
+print(("Result image (w=" + str(w) + " h=" + str(h) + ") will be written to " +
+      output))
 
 im = Image.new("RGB", (w + border, h + border), bgcolor)
 draw = ImageDraw.Draw(im)
@@ -494,8 +494,8 @@ def read_mapdata(mapdata, version, pixellist, water, day_night_differs,
     global unknown_node_ids
 
     if(len(mapdata) < 4096):
-        print("bad: " + xhex + "/" + zhex + "/" + yhex + " " +
-              str(len(mapdata)))
+        print(("bad: " + xhex + "/" + zhex + "/" + yhex + " " +
+              str(len(mapdata))))
     else:
         chunkxpos = xpos * 16
         chunkypos = ypos * 16
@@ -503,7 +503,7 @@ def read_mapdata(mapdata, version, pixellist, water, day_night_differs,
         content = 0
         datapos = 0
         for (x, z) in reversed(pixellist):
-            for y in reversed(range(16)):
+            for y in reversed(list(range(16))):
                 datapos = x + y * 16 + z * 256
                 content = read_content(mapdata, version, datapos)
                 # Try to convert id to name
@@ -564,10 +564,10 @@ for n in range(len(xlist)):
             remaining_s = time_guess - dtime
             remaining_minutes = int(remaining_s / 60)
             remaining_s -= remaining_minutes * 60
-            print("Processing sector " + str(n) + " of " + str(len(xlist)) +
+            print(("Processing sector " + str(n) + " of " + str(len(xlist)) +
                   " (" + str(round(100.0 * n / len(xlist), 1)) + "%)" +
                   " (ETA: " + str(remaining_minutes) + "m " +
-                  str(int(remaining_s)) + "s)")
+                  str(int(remaining_s)) + "s)"))
 
     xpos = xlist[n]
     zpos = zlist[n]
@@ -647,14 +647,14 @@ for n in range(len(xlist)):
                 r = cur.fetchone()
                 if not r:
                     continue
-                f = cStringIO.StringIO(r[0])
+                f = io.StringIO(r[0])
             else:
                 if sectortype == "old":
                     filename = path + "sectors/" + sector1 + "/" + yhex.lower()
                 else:
                     filename = path + "sectors2/" + sector2 + "/" + \
                                yhex.lower()
-                f = file(filename, "rb")
+                f = open(filename, "rb")
 
             # Let's just memorize these even though it's not really necessary.
             version = readU8(f)
@@ -687,7 +687,7 @@ for n in range(len(xlist)):
 
             # Reuse the unused tail of the file
             f.close()
-            f = cStringIO.StringIO(dec_o.unused_data)
+            f = io.StringIO(dec_o.unused_data)
             # print("unused data: "+repr(dec_o.unused_data))
 
             # zlib-compressed node metadata list
@@ -700,7 +700,7 @@ for n in range(len(xlist)):
 
             # Reuse the unused tail of the file
             f.close()
-            f = cStringIO.StringIO(dec_o.unused_data)
+            f = io.StringIO(dec_o.unused_data)
             # print("* dec_o.unused_data: "+repr(dec_o.unused_data))
             data_after_node_metadata = dec_o.unused_data
 
@@ -767,8 +767,8 @@ for n in range(len(xlist)):
             if(len(pixellist) == 0):
                 break
         except Exception as e:
-            print("Error at (" + str(xpos) + "," + str(ypos) + "," +
-                  str(zpos) + "): " + str(e))
+            print(("Error at (" + str(xpos) + "," + str(ypos) + "," +
+                  str(zpos) + "): " + str(e)))
             sys.stdout.write("Block data: ")
             for c in r[0]:
                 sys.stdout.write("%2.2x " % ord(c))
@@ -783,7 +783,7 @@ print("Drawing image")
 # Drawing the picture
 starttime = time.time()
 n = 0
-for (x, z) in stuff.iterkeys():
+for (x, z) in stuff.keys():
     if n % 500000 == 0:
         nowtime = time.time()
         dtime = nowtime - starttime
@@ -798,10 +798,10 @@ for (x, z) in stuff.iterkeys():
             remaining_s = time_guess - dtime
             remaining_minutes = int(remaining_s / 60)
             remaining_s -= remaining_minutes * 60
-            print("Drawing pixel " + str(n) + " of " + str(listlen) +
+            print(("Drawing pixel " + str(n) + " of " + str(listlen) +
                   " (" + str(round(100.0 * n / listlen, 1)) + "%)" +
                   " (ETA: " + str(remaining_minutes) + "m " +
-                  str(int(remaining_s)) + "s)")
+                  str(int(remaining_s)) + "s)"))
     n += 1
 
     (r, g, b) = colors[stuff[(x, z)][1]]
@@ -876,18 +876,18 @@ if drawscale:
 if drawplayers:
     try:
         for filename in os.listdir(path + "players"):
-            f = file(path + "players/" + filename)
+            f = open(path + "players/" + filename)
             lines = f.readlines()
             name = ""
             position = []
             for line in lines:
-                p = string.split(line)
+                p = line.split()
                 if p[0] == "name":
                     name = p[2]
-                    print(filename + ": name = " + name)
+                    print((filename + ": name = " + name))
                 if p[0] == "position":
-                    position = string.split(p[2][1:-1], ",")
-                    print(filename + ": position = " + p[2])
+                    position = p[2][1:-1].split(",")
+                    print((filename + ": position = " + p[2]))
             if len(name) > 0 and len(position) == 3:
                 x = (int(float(position[0]) / 10 - minx * 16))
                 z = int(h - (float(position[2]) / 10 - minz * 16))
