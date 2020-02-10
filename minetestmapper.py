@@ -774,24 +774,49 @@ for n in range(len(xlist)):
                 break
         except Exception as e:
             print(("Error at (" + str(xpos) + "," + str(ypos) + "," +
-                  str(zpos) + "): " + str(e)))
+                  str(zpos) + "):"))
+            traceback.print_exc()
             sys.stdout.write("Block data: ")
+            last_c = None
             try:
                 for c in r[0]:
+                    last_c = c
                     sys.stdout.write("%2.2x " % ord(c))
             except TypeError:
-                print("...Uh oh, expected characters in r, got ints"
-                      " (This issue occured while handling the"
-                      " Exception):")
+                if last_c is not None:
+                    got = "got {}s".format(type(last_c))
+                else:
+                    got = "but r was {}".format(type(r))
+                    try:
+                        got = "but r[0] was {}".format(type(r[0]))
+                    except:
+                        pass
+                sys.stdout.write("<(The following issue occurred while handling the"
+                      + " Exception)")
+                sys.stdout.write("...Uh oh, expected characters in r, " + got
+                      + ":>")
                 for c in r[0]:
                     sys.stdout.write("%2.2x " % c)
             sys.stdout.write(os.linesep)
-            sys.stdout.write("Data after node metadata: ")
-            for c in data_after_node_metadata:
-                sys.stdout.write("%2.2x " % ord(c))
+            sys.stdout.write("Data after node metadata:")
+            try:
+                count = 0
+                for c in data_after_node_metadata:
+                    sys.stdout.write("%2.2x " % ord(c))
+                    count += 1
+                if count == 0:
+                    sys.stdout.write("<(The following issue occurred while handling the exception): uh oh, got {}: zero characters to convert to ord>".format(data_after_node_metadata))
+            except TypeError:
+                sys.stdout.write("<(The following issue occurred while handling the"
+                      + " Exception)...Uh oh, expected characters in"
+                      " data_after_node_metadata; got:")
+                sys.stdout.flush()
+                sys.stdout.write(os.linesep)(type(data_after_node_metadata) + " length "
+                      + str(len(data_after_node_metadata))
+                      + " :>")
             sys.stdout.write(os.linesep)
-            traceback.print_exc()
-            raise e  # or std output will be HUGE
+            sys.stdout.write(os.linesep)
+            exit(1)  # stop HUGE stdout
 
 print("Drawing image")
 # Drawing the picture

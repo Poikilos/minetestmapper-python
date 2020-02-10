@@ -522,7 +522,9 @@ class LVLDB:
         return BytesIO(self.conn.Get(pos))
 
 
-R_MSG = "<Could not finish writing r error since r was not initialized>"
+R_MSG = ("<(The following issue occurred while handling the exception)"
+         " Could not finish writing r error since r was not"
+         " initialized>")
 
 class World:
     def __init__(self,args):
@@ -857,7 +859,7 @@ class World:
                             mapinfo['undergroundh'][pos] = uhdata.reshape(16,16)
                         break
                 except Exception as e:
-                    print(("Error at ("+str(xpos)+","+str(ypos)+","+str(zpos)+"): "+str(e)))
+                    print(("Error at ("+str(xpos)+","+str(ypos)+","+str(zpos)+"):"))
                     traceback.print_exc()
                     sys.stdout.write("Block data: ")
                     try:
@@ -865,15 +867,29 @@ class World:
                             sys.stdout.write("%2.2x "%ord(c))
                     except NameError:
                         if self.r_error_enable:
-                            print(R_MSG)
+                            sys.stdout.write(R_MSG)
                             # stop here or stdout is several hundred MB:
                             self.r_error_enable = False
                     sys.stdout.write(os.linesep)
-                    sys.stdout.write("Data after node metadata: ")
-                    for c in data_after_node_metadata:
-                        sys.stdout.write("%2.2x "%ord(c))
+                    sys.stdout.write("Data after node metadata:")
+                    try:
+                        count = 0
+                        for c in data_after_node_metadata:
+                            sys.stdout.write("%2.2x "%ord(c))
+                            count += 1
+                        if count == 0:
+                            sys.stdout.write("<(The following issue occurred while handling the exception) Uh oh, got {}: zero characters to convert to ord>".format(data_after_node_metadata))
+                    except TypeError:
+                        sys.stdout.write("<(The following issue occurred while handling the"
+                              + " Exception) Uh oh, expected characters in"
+                              " data_after_node_metadata; got:")
+                        sys.stdout.flush()
+                        sys.stdout.write(os.linesep)(type(data_after_node_metadata) + " length "
+                              + str(len(data_after_node_metadata))
+                              + ":>")
                     sys.stdout.write(os.linesep)
-                    traceback.print_exc()
+                    sys.stdout.write(os.linesep)
+                    exit(1) # stop HUGE stdout
         self.mapinfo = mapinfo
         if unknown_node_names:
             sys.stdout.write("Unknown node names:")
