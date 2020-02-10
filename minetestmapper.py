@@ -17,32 +17,36 @@ import string
 import time
 import getopt
 import sys
+import traceback
 import array
+import io
 try:
-    import io
     BytesIO = io.BytesIO
-except:
-    import io
+except AttributeError:
     BytesIO = io.StringIO
 
-import traceback
+
+PIL_HELP = """
+You must first install Pillow (fork of PIL).
+
+- On Windows:
+Right-click windows menu, 'Command Prompt (Admin)' then:
+pip install Pillow
+
+- On *nix-like systems:
+sudo python2 -m pip install --upgrade pip
+sudo python2 -m pip install --upgrade pip wheel
+#then:
+#
+python2 -m pip install Pillow  # sudo pip install Pillow
+#or
+#same but python3 instead  # sudo pip install Pillow
+
+"""
 try:
     from PIL import Image, ImageDraw, ImageFont, ImageColor
-except:
-    print("You must first install Pillow's PIL.")
-    print("On Windows:")
-    print("Right-click windows menu, 'Command Prompt (Admin)' then:")
-    print("pip install Pillow")
-    print("")
-    print("On *nix-like systems:")
-    print("sudo python2 -m pip install --upgrade pip")
-    print("sudo python2 -m pip install --upgrade pip wheel")
-    print("#then:")
-    #print("sudo pip install Pillow")
-    print("python2 -m pip install Pillow")
-    print("#or")
-    print("#same but python3 instead")
-    #print("sudo pip install Pillow")
+except ImportError:
+    print(PIL_HELP)
     exit()
 
 TRANSLATION_TABLE = {
@@ -142,6 +146,7 @@ def readS32(f):
     return unsignedToSigned(ord(f.read(1))*256*256*256 +
                             ord(f.read(1))*256*256 + ord(f.read(1))*256 +
                             ord(f.read(1)), 2**31)
+
 
 usagetext = """minetestmapper.py [options]
   -i/--input <world_path>
@@ -261,16 +266,16 @@ if geometry_string is not None:
             nonchunky_xmax = nonchunky_xmin + this_width - 1  # inclusive rect
             nonchunky_zmin = z
             nonchunky_zmax = nonchunky_zmin + this_height - 1  # inclusive rect
-            print(("#geometry:" + "\n" +
-                  "#  x:" + str(x) + "\n" +
-                  "#  z:" + str(z) + "\n" +
-                  "#  width:" + str(this_width) + "\n" +
-                  "#  height:" + str(this_height) + "\n" +
-                  "region:" + "\n" +
-                  "  xmin:" + str(nonchunky_xmin) + "\n" +
-                  "  xmax:" + str(nonchunky_xmax) + "\n" +
-                  "  zmin:" + str(nonchunky_zmin) + "\n" +
-                  "  zmax:" + str(nonchunky_zmax)))
+            print("#geometry:" + "\n"
+                  + "#  x:" + str(x) + "\n"
+                  + "#  z:" + str(z) + "\n"
+                  + "#  width:" + str(this_width) + "\n"
+                  + "#  height:" + str(this_height) + "\n"
+                  + "region:" + "\n"
+                  + "  xmin:" + str(nonchunky_xmin) + "\n"
+                  + "  xmax:" + str(nonchunky_xmax) + "\n"
+                  + "  zmin:" + str(nonchunky_zmin) + "\n"
+                  + "  zmax:" + str(nonchunky_zmax))
         else:
             print(("ERROR: Missing coordinates in '" + geometry_string +
                   "' for geometry (must be in the form: x:z+width+height)"))
@@ -293,11 +298,11 @@ elif region_string is not None:
         nonchunky_xmax = int(xmax_string)
         nonchunky_zmin = int(zmin_string)
         nonchunky_zmax = int(zmax_string)
-        print(("region:" + "\n" +
-              "  xmin:" + str(nonchunky_xmin) + "\n" +
-              "  xmax:" + str(nonchunky_xmax) + "\n" +
-              "  zmin:" + str(nonchunky_zmin) + "\n" +
-              "  zmax:" + str(nonchunky_zmax)))
+        print("region:" + "\n"
+              + "  xmin:" + str(nonchunky_xmin) + "\n"
+              + "  xmax:" + str(nonchunky_xmax) + "\n"
+              + "  zmin:" + str(nonchunky_zmin) + "\n"
+              + "  zmax:" + str(nonchunky_zmax))
     else:
         print(("ERROR: Incorrect value '" + region_string +
               "' for region (must be in the form: xmin:xmax,zmin:zmax)"))
@@ -566,10 +571,11 @@ for n in range(len(xlist)):
             remaining_s = time_guess - dtime
             remaining_minutes = int(remaining_s / 60)
             remaining_s -= remaining_minutes * 60
-            print(("Processing sector " + str(n) + " of " + str(len(xlist)) +
-                  " (" + str(round(100.0 * n / len(xlist), 1)) + "%)" +
-                  " (ETA: " + str(remaining_minutes) + "m " +
-                  str(int(remaining_s)) + "s)"))
+            print("Processing sector " + str(n) + " of "
+                  + str(len(xlist)) + " ("
+                  + str(round(100.0 * n / len(xlist), 1)) + "%)"
+                  + " (ETA: " + str(remaining_minutes) + "m "
+                  + str(int(remaining_s)) + "s)")
 
     xpos = xlist[n]
     zpos = zlist[n]
@@ -769,9 +775,9 @@ for n in range(len(xlist)):
             if(len(pixellist) == 0):
                 break
         except Exception as e:
-            print(("Error at (" + str(xpos) + "," + str(ypos) + "," +
-                  str(zpos) + "):"))
+            print("Error at {}:".format((xpos, ypos, zpos)))
             traceback.print_exc()
+            sys.stdout.write(os.linesep)
             sys.stdout.write("Block data: ")
             last_c = None
             try:
@@ -780,36 +786,46 @@ for n in range(len(xlist)):
                     sys.stdout.write("%2.2x " % ord(c))
             except TypeError:
                 if last_c is not None:
-                    got = "got {}s".format(type(last_c))
+                    got = "got {}s".format(type(last_c).__name__)
                 else:
-                    got = "but r was {}".format(type(r))
+                    got = "but r was {}".format(type(r).__name__)
                     try:
-                        got = "but r[0] was {}".format(type(r[0]))
-                    except:
+                        r0_tn = type(r[0]).__name__
+                        got = "but r[0] was {}".format(r0_tn)
+                    except Exception as e:
+                        sys.stdout.write("<(The following exception"
+                                         " occurred while handling the"
+                                         " exception above:"
+                                         " {})".format(e))
                         pass
-                sys.stdout.write("<(The following issue occurred while handling the"
-                      + " Exception)")
-                sys.stdout.write("...Uh oh, expected characters in r, " + got
-                      + ":>")
+                sys.stdout.write("<(The following issue occurred while"
+                                 " handling the exception above)")
+                sys.stdout.write("...Uh oh, expected characters in r, "
+                                 + got + ":>")
                 for c in r[0]:
                     sys.stdout.write("%2.2x " % c)
             sys.stdout.write(os.linesep)
             sys.stdout.write("Data after node metadata:")
+            d_a_n_md = data_after_node_metadata
             try:
                 count = 0
                 for c in data_after_node_metadata:
                     sys.stdout.write("%2.2x " % ord(c))
                     count += 1
                 if count == 0:
-                    sys.stdout.write("<(The following issue occurred while handling the exception): uh oh, got {}: zero characters to convert to ord>".format(data_after_node_metadata))
+                    sys.stdout.write("<(The following issue occurred"
+                                     " while handling the exception):"
+                                     " uh oh, got {}: zero characters"
+                                     " to convert to "
+                                     "ord>".format(d_a_n_md))
             except TypeError:
-                sys.stdout.write("<(The following issue occurred while handling the"
-                      + " Exception)...Uh oh, expected characters in"
-                      " data_after_node_metadata; got:")
+                sys.stdout.write("<(The following issue occurred while"
+                                 " handling the exception above)...Uh"
+                                 " oh, expected characters in"
+                                 " data_after_node_metadata; got:")
                 sys.stdout.flush()
-                sys.stdout.write(os.linesep)(type(data_after_node_metadata) + " length "
-                      + str(len(data_after_node_metadata))
-                      + " :>")
+                sys.stdout.write(str(len(d_a_n_md)) + "-length "
+                                 + type(d_a_n_md).__name__ + " :>")
             sys.stdout.write(os.linesep)
             sys.stdout.write(os.linesep)
             exit(1)  # stop HUGE stdout
@@ -833,10 +849,10 @@ for (x, z) in stuff.keys():
             remaining_s = time_guess - dtime
             remaining_minutes = int(remaining_s / 60)
             remaining_s -= remaining_minutes * 60
-            print(("Drawing pixel " + str(n) + " of " + str(listlen) +
-                  " (" + str(round(100.0 * n / listlen, 1)) + "%)" +
-                  " (ETA: " + str(remaining_minutes) + "m " +
-                  str(int(remaining_s)) + "s)"))
+            print("Drawing pixel " + str(n) + " of " + str(listlen)
+                  + " (" + str(round(100.0 * n / listlen, 1)) + "%)"
+                  + " (ETA: " + str(remaining_minutes) + "m "
+                  + str(int(remaining_s)) + "s)")
     n += 1
 
     (r, g, b) = colors[stuff[(x, z)][1]]
@@ -886,9 +902,15 @@ for (x, z) in stuff.keys():
 
 
 if draworigin:
-    draw.ellipse((minx * -16 - 5 + border, h - minz * -16 - 6 + border,
-                  minx * -16 + 5 + border, h - minz * -16 + 4 + border),
-                 outline=origincolor)
+    draw.ellipse(
+        (
+            minx * -16 - 5 + border,
+            h - minz * -16 - 6 + border,
+            minx * -16 + 5 + border,
+            h - minz * -16 + 4 + border
+        ),
+        outline=origincolor
+    )
 
 font = ImageFont.load_default()
 
@@ -897,16 +919,41 @@ if drawscale:
     draw.text((2, 24), "Z", font=font, fill=scalecolor)
 
     for n in range(int(minx / -4) * -4, maxx, 4):
-        draw.text((minx * -16 + n * 16 + 2 + border, 0), str(n * 16),
-                  font=font, fill=scalecolor)
-        draw.line((minx * -16 + n * 16 + border, 0,
-                  minx * -16 + n * 16 + border, border - 1), fill=scalecolor)
+        draw.text(
+            (
+                minx * -16 + n * 16 + 2 + border,
+                0
+            ),
+            str(n * 16),
+            font=font,
+            fill=scalecolor
+        )
+        draw.line(
+            (
+                minx * -16 + n * 16 + border,
+                0,
+                minx * -16 + n * 16 + border,
+                border - 1
+            ),
+            fill=scalecolor
+        )
 
     for n in range(int(maxz / 4) * 4, minz, -4):
-        draw.text((2, h - 1 - (n * 16 - minz * 16) + border), str(n * 16),
-                  font=font, fill=scalecolor)
-        draw.line((0, h - 1 - (n * 16 - minz * 16) + border, border - 1,
-                  h - 1 - (n * 16 - minz * 16) + border), fill=scalecolor)
+        draw.text(
+            (2, h - 1 - (n * 16 - minz * 16) + border),
+            str(n * 16),
+            font=font,
+            fill=scalecolor
+        )
+        draw.line(
+            (
+                0,
+                h - 1 - (n * 16 - minz * 16) + border,
+                border - 1,
+                h - 1 - (n * 16 - minz * 16) + border
+            ),
+            fill=scalecolor
+        )
 
 if drawplayers:
     try:
@@ -926,11 +973,19 @@ if drawplayers:
             if len(name) > 0 and len(position) == 3:
                 x = (int(float(position[0]) / 10 - minx * 16))
                 z = int(h - (float(position[2]) / 10 - minz * 16))
-                draw.ellipse((x - 2 + border, z - 2 + border,
-                             x + 2 + border, z + 2 + border),
-                             outline=playercolor)
-                draw.text((x + 2 + border, z + 2 + border), name,
-                          font=font, fill=playercolor)
+                draw.ellipse(
+                    (
+                        x - 2 + border, z - 2 + border,
+                        x + 2 + border, z + 2 + border
+                    ),
+                    outline=playercolor
+                )
+                draw.text(
+                    (x + 2 + border, z + 2 + border),
+                    name,
+                    font=font,
+                    fill=playercolor
+                )
             f.close()
     except OSError:
         pass
