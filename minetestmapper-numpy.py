@@ -78,7 +78,7 @@ def pngsave(im, file):
         print("#or")
         print("#same but python3 instead")
         #print("sudo pip install Pillow")
-        exit()
+        exit(1)
 
     meta = PngImagePlugin.PngInfo()
 
@@ -513,10 +513,10 @@ class LVLDB:
                     #val = "\\0x" + k[0].replace("\\x", "")
                 x, y, z = getIntegerAsBlock(int(val))
                 yield x, y, z, val
-            except:
-                pass
-                #print("Could not finish getting int from first index of value "+str(k))
+            except Exception as e:
+                print("Could not finish getting int from first index of value "+str(k))
                 #SOMETIMES prints tons of output such as Could not finish getting int from first index of value ('\x00\x00\x00\x0e\x00\x02\x85 ', '\x19\x08\x02\x02x\x9c\xed\xc11\x01\x00\x00\x00\xc2\xa0\xf5Om\x0c\x1f\xa0\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x80\xb7\x01@\x00\x00\x01x\x9cc\x00\x00\x00\x01\x00\x01\x00\x00\x00\xff\xff\xff\xff\x00\x00\x01\x00\x00\x00\x06ignore\n\x00\x00')
+                raise e
 
     def get(self, pos):
         return BytesIO(self.conn.Get(pos))
@@ -740,8 +740,8 @@ class World:
                     # zlib-compressed node metadata list
                     dec_o = zlib.decompressobj()
                     try:
-                        s=dec_o.decompress(f.read())
-                        metaliststr = numpy.fromstring(s,"u1")
+                        s = dec_o.decompress(f.read())
+                        metaliststr = numpy.frombuffer(s,"u1")
                         # And do nothing with it
                     except:
                         metaliststr = []
@@ -863,7 +863,7 @@ class World:
                     try:
                         for c in r[0]:
                             sys.stdout.write("%2.2x "%ord(c))
-                    except:
+                    except NameError:
                         if self.r_error_enable:
                             print(R_MSG)
                             # stop here or stdout is several hundred MB:

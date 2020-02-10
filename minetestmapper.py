@@ -22,7 +22,13 @@ import time
 import getopt
 import sys
 import array
-import io
+try:
+    import io
+    BytesIO = io.BytesIO
+except:
+    import io
+    BytesIO = io.StringIO
+
 import traceback
 try:
     from PIL import Image, ImageDraw, ImageFont, ImageColor
@@ -647,7 +653,7 @@ for n in range(len(xlist)):
                 r = cur.fetchone()
                 if not r:
                     continue
-                f = io.StringIO(r[0])
+                f = BytesIO(r[0])
             else:
                 if sectortype == "old":
                     filename = path + "sectors/" + sector1 + "/" + yhex.lower()
@@ -687,7 +693,7 @@ for n in range(len(xlist)):
 
             # Reuse the unused tail of the file
             f.close()
-            f = io.StringIO(dec_o.unused_data)
+            f = BytesIO(dec_o.unused_data)
             # print("unused data: "+repr(dec_o.unused_data))
 
             # zlib-compressed node metadata list
@@ -700,7 +706,7 @@ for n in range(len(xlist)):
 
             # Reuse the unused tail of the file
             f.close()
-            f = io.StringIO(dec_o.unused_data)
+            f = BytesIO(dec_o.unused_data)
             # print("* dec_o.unused_data: "+repr(dec_o.unused_data))
             data_after_node_metadata = dec_o.unused_data
 
@@ -770,14 +776,22 @@ for n in range(len(xlist)):
             print(("Error at (" + str(xpos) + "," + str(ypos) + "," +
                   str(zpos) + "): " + str(e)))
             sys.stdout.write("Block data: ")
-            for c in r[0]:
-                sys.stdout.write("%2.2x " % ord(c))
+            try:
+                for c in r[0]:
+                    sys.stdout.write("%2.2x " % ord(c))
+            except TypeError:
+                print("...Uh oh, expected characters in r, got ints"
+                      " (This issue occured while handling the"
+                      " Exception):")
+                for c in r[0]:
+                    sys.stdout.write("%2.2x " % c)
             sys.stdout.write(os.linesep)
             sys.stdout.write("Data after node metadata: ")
             for c in data_after_node_metadata:
                 sys.stdout.write("%2.2x " % ord(c))
             sys.stdout.write(os.linesep)
             traceback.print_exc()
+            raise e  # or std output will be HUGE
 
 print("Drawing image")
 # Drawing the picture
