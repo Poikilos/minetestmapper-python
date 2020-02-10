@@ -1,16 +1,12 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Make an image using minetest data (numpy-ized by spillz).
 
-# Make an image using minetest data (numpy-ized by spillz).
-#
-# Made by spillz, modified by: poikilos
-# Based on minetestmapper by Jogge, modified by: celeron55
-#
-# The minetestmapper-python project is free software. It comes without
-# any warranty to the extent permitted by applicable law. You can
-# redistribute it and/or modify it under the terms of the included
-# GNU Lesser General Public License,
-# which must be included along with this software.
+Authors: spillz, modified by: Poikilos; based on minetestmapper by
+  Jogge and modified by celeron55.
+
+License: See LICENSE
+"""
 
 import zlib
 import os

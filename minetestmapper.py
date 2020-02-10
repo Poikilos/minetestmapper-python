@@ -1,15 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Make an image using minetest data.
 
-# Make an image using minetest data.
-#
-# Made by Jogge, modified by: celeron55, poikilos
-#
-# The minetestmapper-python project is free software. It comes without
-# any warranty to the extent permitted by applicable law. You can
-# redistribute it and/or modify it under the terms of the included
-# GNU Lesser General Public License,
-# which must be included along with this software.
+Authors: Jogge, modified by: celeron55, Poikilos
+
+License: See LICENSE
+"""
 
 # Some speed-up: ...lol, actually it slows it down.
 # import psyco ; psyco.full()

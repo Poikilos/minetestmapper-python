@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Load block files from sectors folders into map.sqlite database.
+The sectors folder should be safe to remove after this module prints
+"Finished."
 
-# Load block files from sectors folders into map.sqlite database.
-# The sectors folder should be safe to remove after prints "Finished."
-#
-# Made by the minetest team <https://github.com/minetest>
-#
-# The minetestmapper-python project is free software. It comes without
-# any warranty to the extent permitted by applicable law. You can
-# redistribute it and/or modify it under the terms of the included
-# GNU Lesser General Public License,
-# which must be included along with this software.
+Authors: The minetest team <https://github.com/minetest>
+
+From Minetest
+Copyright (C) 2010-2013 celeron55, Perttu Ahola <celeron55@gmail.com>
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation; either version 2.1 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+"""
 
 # Some speed-up: ...lol, actually it slows it down.
 # import psyco ; psyco.full()
