@@ -182,7 +182,7 @@ try:
                                 "region="])
 except getopt.GetoptError as err:
     # print help information and exit:
-    print((str(err)))  # will print something like "option -a not recognized"
+    print(str(err))  # something like "option -a not recognized"
     usage()
     sys.exit(2)
 
@@ -230,21 +230,21 @@ for o, a in opts:
     elif o == "--region":
         region_string = a
     elif o == "--drawalpha":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--noshading":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--min-y":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--max-y":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--backend":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--zoom":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--colors":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--scales":
-        print(("# ignored (NOT YET IMPLEMENTED) " + o))
+        print("# ignored (NOT YET IMPLEMENTED) " + o)
     else:
         assert False, "unhandled option"
 
@@ -277,13 +277,14 @@ if geometry_string is not None:
                   + "  zmin:" + str(nonchunky_zmin) + "\n"
                   + "  zmax:" + str(nonchunky_zmax))
         else:
-            print(("ERROR: Missing coordinates in '" + geometry_string +
-                  "' for geometry (must be in the form: x:z+width+height)"))
+            print("ERROR: Missing coordinates in '" + geometry_string
+                  + "' for geometry (must be in the form:"
+                  + " x:z+width+height)")
             usage()
             sys.exit(2)
     else:
-        print(("ERROR: Incorrect geometry syntax '" + geometry_string +
-              "' (must be in the form: x:z+width+height)"))
+        print("ERROR: Incorrect geometry syntax '" + geometry_string
+              + "' (must be in the form: x:z+width+height)")
         usage()
         sys.exit(2)
 elif region_string is not None:
@@ -304,8 +305,9 @@ elif region_string is not None:
               + "  zmin:" + str(nonchunky_zmin) + "\n"
               + "  zmax:" + str(nonchunky_zmax))
     else:
-        print(("ERROR: Incorrect value '" + region_string +
-              "' for region (must be in the form: xmin:xmax,zmin:zmax)"))
+        print("ERROR: Incorrect value '" + region_string
+              + "' for region (must be in the form:"
+              + " xmin:xmax,zmin:zmax)")
         usage()
         sys.exit(2)
 
@@ -451,8 +453,8 @@ maxz = max(zlist)
 w = (maxx - minx) * 16 + 16
 h = (maxz - minz) * 16 + 16
 
-print(("Result image (w=" + str(w) + " h=" + str(h) + ") will be written to " +
-      output))
+print("Result image (w=" + str(w) + " h=" + str(h)
+      + ") will be written to " + output)
 
 im = Image.new("RGB", (w + border, h + border), bgcolor)
 draw = ImageDraw.Draw(im)
@@ -501,8 +503,8 @@ def read_mapdata(mapdata, version, pixellist, water, day_night_differs,
     global unknown_node_ids
 
     if(len(mapdata) < 4096):
-        print(("bad: " + xhex + "/" + zhex + "/" + yhex + " " +
-              str(len(mapdata))))
+        print("bad: " + xhex + "/" + zhex + "/" + yhex + " " +
+              str(len(mapdata)))
     else:
         chunkxpos = xpos * 16
         chunkypos = ypos * 16
@@ -966,10 +968,10 @@ if drawplayers:
                 p = line.split()
                 if p[0] == "name":
                     name = p[2]
-                    print((filename + ": name = " + name))
+                    print(filename + ": name = " + name)
                 if p[0] == "position":
                     position = p[2][1:-1].split(",")
-                    print((filename + ": position = " + p[2]))
+                    print(filename + ": position = " + p[2])
             if len(name) > 0 and len(position) == 3:
                 x = (int(float(position[0]) / 10 - minx * 16))
                 z = int(h - (float(position[2]) / 10 - minz * 16))

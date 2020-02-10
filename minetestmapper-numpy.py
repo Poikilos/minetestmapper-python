@@ -574,7 +574,7 @@ class SQLDB:
         self.cur.execute("SELECT `pos` FROM `blocks`")
         while True:
             r = self.cur.fetchone()
-            print(("getting int from first index of value "+str(r)))
+            print("getting int from first index of value "+str(r))
             if not r:
                 break
             x, y, z = getIntegerAsBlock(r[0])
@@ -1127,8 +1127,8 @@ def draw_image(world, uid_to_color):
         ugstrength = (ugstrength - (ugstrength - 0.75)
                       * (ugstrength > 0.75))
         ugstrength = ugstrength[:, :, numpy.newaxis]
-        print(('ugmin', stuff['undergroundh'].min()))
-        print(('ugmax', stuff['undergroundh'].max()))
+        print('ugmin', stuff['undergroundh'].min())
+        print('ugmax', stuff['undergroundh'].max())
         ugdepth = (
             1.0 * (stuff['undergroundh']-stuff['undergroundh'].min())
             / (stuff['undergroundh'].max()-stuff['undergroundh'].min())
@@ -1305,10 +1305,10 @@ def draw_image(world, uid_to_color):
                     p = line.split()
                     if p[0] == "name":
                         name = p[2]
-                        print((filename + ": name = " + name))
+                        print(filename + ": name = " + name)
                     if p[0] == "position":
                         position = p[2][1:-1].split(",")
-                        print((filename + ": position = " + p[2]))
+                        print(filename + ": position = " + p[2])
                 if len(name) < 0 and len(position) == 3:
                     x, y, z = [int(float(p)/10) for p in position]
                     x, y, z = world.facing(x, y, z)
@@ -1347,12 +1347,12 @@ def draw_image(world, uid_to_color):
     pngmaxz = maxz*16+16
     pngregion = [pngminx, pngmaxx, pngminz, pngmaxz]
 
-    print(("Saving to: " + args.output))
-    print(("PNG Region: ", pngregion))
-    print(("pngMinX: ", str(pngminx)))
-    print(("pngMaxZ: ", str(pngmaxz)))
-    print(("Pixels PerNode: ", args.pixelspernode))
-    print(("border: ", border))
+    print("Saving to: " + args.output)
+    print("PNG Region: ", pngregion)
+    print("pngMinX: ", str(pngminx))
+    print("pngMaxZ: ", str(pngmaxz))
+    print("Pixels PerNode: ", args.pixelspernode)
+    print("border: ", border)
 
     # This saves data in tEXt chunks (non-standard naming tags are
     # allowed according to the PNG specification)
