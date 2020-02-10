@@ -1,6 +1,14 @@
 # minetestmapper-python
 Use python to make minetest maps from worlds.
 
+## License
+- sectors2sqlite.py: see lgpl-2.1.txt
+- other code: see LICENSE
+
+### Authors
+- The github.com/minetest team: minetestmapper.py and sectors2sqlite.py (see CHANGELOG.md)
+- spillz: the original minetestmapper-numpy.py only
+- Jake Gustafson
 
 ## Goals:
 * Conform syntax and features to the new official [https://github.com/minetest/minetestmapper](minetestmapper) which is in C++
