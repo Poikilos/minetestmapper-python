@@ -47,6 +47,9 @@ except ImportError:
     exit()
 
 
+def join_as_str(delimiter, arr):
+    return delimiter.join(str(x) for x in arr)
+
 #
 # wrapper around PIL 1.1.6 Image.save to preserve PNG metadata
 #
@@ -574,9 +577,9 @@ class SQLDB:
         self.cur.execute("SELECT `pos` FROM `blocks`")
         while True:
             r = self.cur.fetchone()
-            print("getting int from first index of value "+str(r))
             if not r:
                 break
+            # print("getting int from first index of value " + str(r))
             x, y, z = getIntegerAsBlock(r[0])
             yield x, y, z, r[0]
 
@@ -1356,7 +1359,7 @@ def draw_image(world, uid_to_color):
 
     # This saves data in tEXt chunks (non-standard naming tags are
     # allowed according to the PNG specification)
-    im.info["pngRegion"] = ",".join(pngregion)
+    im.info["pngRegion"] = join_as_str(",", pngregion)
     im.info["pngMinX"] = str(pngminx)
     im.info["pngMaxZ"] = str(pngmaxz)
     im.info["border"] = str(border)
