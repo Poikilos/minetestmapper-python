@@ -234,6 +234,22 @@ def read_content(mapdata, version, datapos=None):
 
 
 def parse_args():
+
+    # Pre-process geometry so argparse doesn't interpret negative as
+    # an option.
+    geometry = ''
+    i = 0
+    while i < len(sys.argv):
+        if sys.argv[i] == "--geometry":
+            del sys.argv[i]
+            geometry = None
+        elif geometry is None:
+            geometry = sys.argv[i]
+            del sys.argv[i]
+        else:
+            i += 1
+    i = None
+
     ap = argparse.ArgumentParser(description='A mapper for minetest')
     ap.add_argument('--bgcolor', default='black', metavar='COLOR',
                     type=ImageColor.getrgb,
@@ -306,8 +322,15 @@ def parse_args():
                           ' south, east or west will draw a'
                           ' cross-section)'))
     ap.add_argument('--geometry', type=str, default='',
-                    help=('accepted for compatibility but'
-                          ' NOT YET IMPLEMENTED in this version'))
+                   nargs='?', action='store',
+                    help=('Specify a region in X:Y+W+H format.'))
+    # ^ handle hyphen as negative number not option
+    # See:
+    # - <https://docs.python.org/3.2/library/
+    #   argparse.html#arguments-containing>
+    # - <https://stackoverflow.com/questions/9025204/python-
+    #   argparse-issue-with-optional-arguments-which-are-negative-
+    #   numbers> (says to use action='store'--didn't work)
     ap.add_argument('--scales', type=str, default='',
                     help=('accepted for compatibility but'
                           ' NOT YET IMPLEMENTED in this version'))
@@ -336,6 +359,7 @@ def parse_args():
         print("World does not exist")
         sys.exit(1)
     args.input = os.path.abspath(args.input)
+    args.geometry = geometry
     return args
 
 
@@ -630,6 +654,19 @@ R_MSG = ("<(The following issue occurred while handling the exception"
          " above) Could not finish writing r error since r was not"
          " initialized>")
 
+def geometry_to_ints(s):
+    """Convert a string in the format X:Y+W+H to a 4-part tuple"""
+    chunks = s.split("+")
+    if len(chunks) != 3:
+        raise ValueError("Geometry must be in the format X:Y+W+H"
+                         " not {}".format(s))
+    topleft = chunks[0].split(":")
+    if len(topleft) != 2:
+        raise ValueError("Geometry must be in the format X:Y+W+H"
+                         " not {}".format(s))
+    return (int(topleft[0]), int(topleft[1]),
+            int(chunks[1]), int(chunks[2]))
+
 
 class World:
     def __init__(self, args):
@@ -658,12 +695,15 @@ class World:
         resulting picture.
         '''
         args = self.args
+        rect = args.region
+        if len(args.geometry) > 0:
+            rect = geometry_to_ints(args.geometry)
         (
             sector_xmin,
             sector_xmax,
             sector_zmin,
             sector_zmax
-        ) = numpy.array(args.region)/16
+        ) = numpy.array(rect)/16
         sector_ymin = args.minheight/16
         sector_ymax = args.maxheight/16
         xlist = []
@@ -700,7 +740,7 @@ class World:
             self.maxx = max(xlist)
             self.maxz = max(zlist)
 
-            x0, x1, z0, z1 = numpy.array(args.region)
+            x0, x1, z0, z1 = numpy.array(rect)
             y0 = args.minheight
             y1 = args.maxheight
             self.minypos = self.facing(int(x0), int(y0), int(z0))[1]
