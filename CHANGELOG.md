@@ -5,6 +5,26 @@ The format is based on [Keep a
 Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [git] - 2020-02-29
+(Poikilos)
+### Added
+- Support the `--backend` argument.
+  - Look for it in `get_db`.
+- Support the `--colors` argument.
+
+### Changed
+- Change the `world_dir` argument to `-i` or `--input`.
+- Allow `-o` as shorthand for `--output`
+- No longer add `os.path.sep` to `args.input`
+
+### Fixed
+- Use `os.path.join`
+  - ...when looking for world.mt if `backend` is not
+    specified in minetestmapper-numpy.py.
+  - No longer add `os.path.sep` to `args.input` and other paths.
+- Use `elif` with database formats to prevent overlaying converted
+  databases onto each other in minetestmapper-numpy.py.
+
 ## [git] - 2020-02-10
 (Poikilos)
 ### Removed

@@ -148,6 +148,13 @@ def readS32(f):
                             ord(f.read(1)), 2**31)
 
 
+colors_msg = """<color> format: '#000000'
+NOTE: colors.txt must be in same directory as
+this script or in the current working
+directory (or util directory if installed).
+Otherwise, use the --colors option followed by a path.
+"""
+
 usagetext = """minetestmapper.py [options]
   -i/--input <world_path>
   -o/--output <output_image.png>
@@ -161,10 +168,8 @@ usagetext = """minetestmapper.py [options]
   --region <xmin>:<xmax>,<zmin>:<zmax>
   --geometry <xmin>:<zmin>+<width>+<height>
   --drawunderground
-Color format: '#000000'
-NOTE: colors.txt must be in same directory as
-this script or in the current working
-directory (or util directory if installed).
+  --colors <path to colors.txt>
+  --backend <sqlite3>  (other db formats are NOT YET IMPLEMENTED)
 """
 
 
@@ -179,7 +184,7 @@ try:
                                 "bgcolor=", "scalecolor=", "origincolor=",
                                 "playercolor=", "draworigin", "drawplayers",
                                 "drawscale", "drawunderground", "geometry=",
-                                "region="])
+                                "region=", "colors=", "backend="])
 except getopt.GetoptError as err:
     # print help information and exit:
     print(str(err))  # something like "option -a not recognized"
@@ -199,6 +204,7 @@ draworigin = False
 drawunderground = False
 geometry_string = None
 region_string = None
+colors_path = None
 
 for o, a in opts:
     if o in ("-h", "--help"):
@@ -229,6 +235,8 @@ for o, a in opts:
         geometry_string = a
     elif o == "--region":
         region_string = a
+    elif o == "--colors":
+        colors_path = a
     elif o == "--drawalpha":
         print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--noshading":
@@ -240,8 +248,6 @@ for o, a in opts:
     elif o == "--backend":
         print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--zoom":
-        print("# ignored (NOT YET IMPLEMENTED) " + o)
-    elif o == "--colors":
         print("# ignored (NOT YET IMPLEMENTED) " + o)
     elif o == "--scales":
         print("# ignored (NOT YET IMPLEMENTED) " + o)
@@ -325,7 +331,7 @@ if path[-1:] != "/" and path[-1:] != "\\":
 
 # Load color information for the blocks.
 colors = {}
-colors_path = "colors.txt"
+colors_name = "colors.txt"
 
 profile_path = None
 if 'HOME' in os.environ:
@@ -335,24 +341,27 @@ elif 'USERPROFILE' in os.environ:
 
 mt_path = None
 mt_util_path = None
-abs_colors_path = None
 
-if not os.path.isfile(colors_path):
-    colors_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                               "colors.txt")
+try_dot_mt_path = os.path.join(profile_path, ".minetest")
+mt_path = os.path.join(profile_path, "minetest")
+mt_util_path = os.path.join(mt_path, "util")
 
-if not os.path.isfile(colors_path):
-    if profile_path is not None:
-        try_path = os.path.join(profile_path, "minetest")
-        if os.path.isdir(try_path):
-            mt_path = try_path
-            mt_util_path = os.path.join(mt_path, "util")
-            abs_colors_path = os.path.join(mt_util_path, "colors.txt")
-            if os.path.isfile(abs_colors_path):
-                colors_path = abs_colors_path
+if colors_path is None:
+    try_paths = []
+    try_paths.append(try_dot_mt_path, colors_name)
+    try_paths.append(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     colors_name)
+    )
+    try_paths.append(mt_path, colors_name)
+    try_paths.append(mt_util_path, colors_name)
+    for try_path in try_paths:
+        if os.path.isfile(try_path):
+            colos_path = try_path
+            break
 
-if not os.path.isfile(colors_path):
-    print("ERROR: could not find colors.txt")
+if (colors_path is None) or (not os.path.isfile(colors_path)):
+    print("ERROR: could not find {}".format(colors_name))
     usage()
     sys.exit(1)
 
@@ -360,7 +369,7 @@ try:
     f = open(colors_path)
 except IOError:
     f = open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          "colors.txt"))
+                          colors_name))
 for line in f:
     values = line.split()
     if len(values) < 4:
@@ -394,6 +403,8 @@ zlist = []
 
 conn = None
 cur = None
+look_for_names = ["map.sqlite", "sectors2", "sectors"]
+look_for_paths = [os.path.join(path, x) for x in look_for_names]
 if os.path.exists(path + "map.sqlite"):
     import sqlite3
     conn = sqlite3.connect(path + "map.sqlite")
@@ -414,8 +425,7 @@ if os.path.exists(path + "map.sqlite"):
 
         xlist.append(x)
         zlist.append(z)
-
-if os.path.exists(path + "sectors2"):
+elif os.path.exists(path + "sectors2"):
     for filename in os.listdir(path + "sectors2"):
         for filename2 in os.listdir(path + "sectors2/" + filename):
             x = hex_to_int(filename)
@@ -426,8 +436,7 @@ if os.path.exists(path + "sectors2"):
                 continue
             xlist.append(x)
             zlist.append(z)
-
-if os.path.exists(path + "sectors"):
+elif os.path.exists(path + "sectors"):
     for filename in os.listdir(path + "sectors"):
         x = hex4_to_int(filename[:4])
         z = hex4_to_int(filename[-4:])
@@ -439,7 +448,8 @@ if os.path.exists(path + "sectors"):
         zlist.append(z)
 
 if len(xlist) == 0 or len(zlist) == 0:
-    print("Data does not exist at this location.")
+    print("A compatible database was not found ({})."
+          "".format(look_for_paths))
     sys.exit(1)
 
 # Get rid of doubles
@@ -703,7 +713,8 @@ for n in range(len(xlist)):
             # zlib-compressed node metadata list
             dec_o = zlib.decompressobj()
             try:
-                metaliststr = array.array("B", dec_o.decompress(f.read()))
+                metaliststr = array.array("B",
+                                          dec_o.decompress(f.read()))
                 # And do nothing with it
             except:
                 metaliststr = []

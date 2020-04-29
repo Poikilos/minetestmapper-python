@@ -50,15 +50,17 @@ except ImportError:
 def join_as_str(delimiter, arr):
     return delimiter.join(str(x) for x in arr)
 
-#
-# wrapper around PIL 1.1.6 Image.save to preserve PNG metadata
-#
-# public domain, Nick Galbreath
-# http://blog.client9.com/2007/08/28/python-pil-and-png-metadata-take-2.html
-#
+
 def pngsave(im, file):
-    # these can be automatically added to Image.info dict
-    # they are not user-added metadata
+    """
+    This is a wrapper around PIL 1.1.6 Image.save to preserve PNG
+    metadata.
+    CC0 Nick Galbreath
+    <http://blog.client9.com/2007/08/28/
+    python-pil-and-png-metadata-take-2.html>
+    These can be automatically added to Image.info dict.
+    They are not user-added metadata.
+    """
     reserved = ('interlace', 'gamma', 'dpi', 'transparency', 'aspect')
 
     # undocumented class
@@ -139,10 +141,13 @@ def int_to_hex4(i):
 #         return i
 #     else:
 #         return i + 2*max_positive
+
+
 # def getBlockAsInteger(p):
 #     return signedToUnsigned(p[2],2048)*16777216
 #            + signedToUnsigned(p[1],2048)*4096
 #            + signedToUnsigned(p[0],2048)
+
 
 def getBlockAsInteger(p):
     return p[2]*16777216 + p[1]*4096 + p[0]
@@ -307,29 +312,30 @@ def parse_args():
                     help=('accepted for compatibility but'
                           ' NOT YET IMPLEMENTED in this version'))
     ap.add_argument('--colors', type=str, default='colors.txt',
-                    help=('accepted for compatibility but'
-                          ' NOT YET IMPLEMENTED in this version'))
-    ap.add_argument('--backend', type=str, choices=('leveldb'),
-                    default='leveldb',
+                    help=('specify a colors list in colors.txt format'
+                          '"80c 183 183 222 # CONTENT_GLASS"'
+                          'or "default:stone 128 128 128")'))
+    ap.add_argument('--backend', type=str,
+                    choices=('leveldb', 'sqlite3'), default='leveldb',
                     help=('accepted for compatibility but'
                           ' NOT YET IMPLEMENTED in this version'))
     ap.add_argument('--fog', type=float, metavar=('FOGSTRENGTH'),
                     default=0.0, help=('use fog strength of'
                                        ' FOGSTRENGTH (0.0 by'
                                        ' default, max of 1.0)'))
-    ap.add_argument('world_dir',
+    ap.add_argument('-i', '--input',
                     help='the path to the world you want to map')
-    ap.add_argument('output', nargs='?', default='map.png',
+    ap.add_argument('-o', '--output', nargs="?", default='map.png',
                     help='the output filename')
     args = ap.parse_args()
-    if args.world_dir is None:
+    if args.input is None:
         print("Please select world path (eg. -i ../worlds/yourworld)"
               " (or use --help)")
         sys.exit(1)
-    if not os.path.isdir(args.world_dir):
+    if not os.path.isdir(args.input):
         print("World does not exist")
         sys.exit(1)
-    args.world_dir = os.path.abspath(args.world_dir) + os.path.sep
+    args.input = os.path.abspath(args.input)
     return args
 
 
@@ -376,19 +382,21 @@ def load_colors(fname="colors.txt"):
 def legacy_fetch_sector_data(args, sectortype, sector_data, ypos):
     yhex = int_to_hex4(ypos)
     if sectortype == "old":
-        ss_path = args.world_dir + "sectors/"
-        filename = ss_path + sector_data[0] + "/" + yhex.lower()
+        ss_path = os.path.join(args.input, "sectors")
+        filename = os.path.join(ss_path, sector_data[0], + yhex.lower())
     else:
-        ss2_path = args.world_dir + "sectors2/"
-        filename = ss2_path + sector_data[1] + "/" + yhex.lower()
+        ss2_path = os.path.join(args.input, "sectors2")
+        filename = os.path.join(ss2_path, sector_data[1], yhex.lower())
     return open(filename, "rb")
 
 
 def legacy_sector_scan(args, sectors_xmin, sector_xmax, sector_zmin,
                        sector_zmax):
-    if os.path.exists(args.world_dir + "sectors2"):
-        for filename in os.listdir(args.world_dir + "sectors2"):
-            ss2_f_path = args.world_dir + "sectors2/" + filename
+    ss_path = os.path.join(args.input, "sectors")
+    ss2_path = os.path.join(args.input, "sectors2")
+    if os.path.exists(ss2_path):
+        for filename in os.listdir(ss2_path):
+            ss2_f_path = os.path.join(ss2_path, filename)
             for filename2 in os.listdir(ss2_f_path):
                 x = hex_to_int(filename)
                 z = hex_to_int(filename2)
@@ -398,9 +406,8 @@ def legacy_sector_scan(args, sectors_xmin, sector_xmax, sector_zmin,
                     continue
                 xlist.append(x)
                 zlist.append(z)
-
-    if os.path.exists(args.world_dir + "sectors"):
-        for filename in os.listdir(args.world_dir + "sectors"):
+    elif os.path.exists(ss_path):
+        for filename in os.listdir(ss_path):
             x = hex4_to_int(filename[:4])
             z = hex4_to_int(filename[-4:])
             if x < sector_xmin or x > sector_xmax:
@@ -419,13 +426,15 @@ def legacy_fetch_ylist(args, xpos, zpos, ylist):
     zhex4 = int_to_hex4(zpos)
 
     sector1 = xhex4.lower() + zhex4.lower()
-    sector2 = xhex.lower() + "/" + zhex.lower()
+    sector2 = os.path.join(xhex.lower(), zhex.lower())
+    ss_path = os.path.join(args.input, "sectors")
+    ss2_path = os.path.join(args.input, "sectors2")
     try:
-        ss_s1_path = args.world_dir + "sectors/" + sector1
+        ss_s1_path = ss_path + sector1
         for filename in os.listdir(ss_s1_path):
-            if(filename != "meta"):
+            if (filename != "meta"):
                 pos = int(filename, 16)
-                if(pos > 32767):
+                if (pos > 32767):
                     pos -= 65536
                 ylist.append(pos)
 
@@ -434,11 +443,11 @@ def legacy_fetch_ylist(args, xpos, zpos, ylist):
 
         if sectortype == "":
             try:
-                ss2_s2_path = args.world_dir + "sectors2/" + sector2
+                ss2_s2_path = os.path.join(ss2_path, sector2)
                 for filename in os.listdir(ss2_s2_path):
-                    if(filename != "meta"):
+                    if (filename != "meta"):
                         pos = int(filename, 16)
-                        if(pos > 32767):
+                        if (pos > 32767):
                             pos -= 65536
                         ylist.append(pos)
                         sectortype = "new"
@@ -551,20 +560,25 @@ def map_block_ug(mapdata, version, ypos, maxy, cdata, hdata, udata,
 
 
 def get_db(args):
-    if not os.path.exists(args.world_dir+"world.mt"):
-        return None
-    with open(args.world_dir+"world.mt") as f:
-        keyvals = f.read().splitlines()
-    keyvals = [kv.split("=") for kv in keyvals]
-    backend = None
-    for k, v in keyvals:
-        if k.strip() == "backend":
-            backend = v.strip()
-            break
+    backend = args.backend
+    if args.backend is None:
+        # This should never happen.
+        print("* detecting db type from world.mt in "
+              "{}".format(args.input))
+        if not os.path.exists(os.path.join(args.input, "world.mt")):
+            return None
+        with open(os.path.join(args.input, "world.mt")) as f:
+            keyvals = f.read().splitlines()
+        keyvals = [kv.split("=") for kv in keyvals]
+        backend = None
+        for k, v in keyvals:
+            if k.strip() == "backend":
+                backend = v.strip()
+                break
     if backend == "sqlite3":
-        return SQLDB(args.world_dir + "map.sqlite")
+        return SQLDB(os.path.join(args.input, "map.sqlite"))
     if backend == "leveldb":
-        return LVLDB(args.world_dir + "map.db")
+        return LVLDB(os.path.join(args.input, "map.db"))
 
 
 class SQLDB:
@@ -1299,8 +1313,9 @@ def draw_image(world, uid_to_color):
 
     if args.drawplayers:
         try:
-            for filename in os.listdir(args.world_dir + "players"):
-                f = open(args.world_dir + "players/" + filename)
+            players_path = os.path.join(args.input, "players")
+            for filename in os.listdir(players_path):
+                f = open(os.path.join(players_path, filename))
                 lines = f.readlines()
                 name = ""
                 position = []
@@ -1395,7 +1410,7 @@ def draw_image(world, uid_to_color):
 def main():
     args = parse_args()
 
-    uid_to_color, str_to_uid = load_colors()
+    uid_to_color, str_to_uid = load_colors(fname=args.colors)
 
     world = World(args)
 
