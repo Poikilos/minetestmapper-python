@@ -321,8 +321,8 @@ def parse_args():
                     help=('direction to face when drawing (north,'
                           ' south, east or west will draw a'
                           ' cross-section)'))
-    ap.add_argument('--geometry', type=str, default='',
-                   nargs='?', action='store',
+    ap.add_argument('--geometry', type=geometry_to_ints, default=None,
+                    action='store',
                     help=('Specify a region in X:Y+W+H format.'))
     # ^ handle hyphen as negative number not option
     # See:
@@ -340,8 +340,8 @@ def parse_args():
                           'or "default:stone 128 128 128")'))
     ap.add_argument('--backend', type=str,
                     choices=('leveldb', 'sqlite3'), default='leveldb',
-                    help=('accepted for compatibility but'
-                          ' NOT YET IMPLEMENTED in this version'))
+                    help=('manually specify leveldb or sqlite3'
+                          ' (others are NOT YET IMPLEMENTED)'))
     ap.add_argument('--fog', type=float, metavar=('FOGSTRENGTH'),
                     default=0.0, help=('use fog strength of'
                                        ' FOGSTRENGTH (0.0 by'
